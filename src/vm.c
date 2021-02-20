@@ -10,17 +10,32 @@
 
 vm_runtime* init_vm(uint8_t* bytecode) {
 	vm_runtime* res = (vm_runtime*) calloc(sizeof(vm_runtime*), 1);
-	res->btecode = bytecode;
+	res->bytecode = bytecode;
 	res->sail_ram = vm_init_memory();
-	res->registers = calloc(sizeof(uint32_t*), 1);
+	res->registers = calloc(sizeof(uint32_t), 4);
 	return res;
 }
 
-void vm_run(vm_runtime *vm) {
-	while (true) {
-		uint8_t* instruction = &vm->btecode[vm->pc++];
+uint8_t* vm_read32(vm_runtime *vm) {
+	uint8_t* res = calloc(sizeof(uint8_t), 4);
+	for (int i = 0; i < 4; i++) {
+		res[i] = *(&vm->bytecode[vm->pc + i + 2]);
+	}
+	vm->pc += 5;
+	return res;
+}
+
 #ifdef DEBUG
-		printf("running %" PRIu8 "\n", *instruction);
+void print_reg(vm_runtime* vm) {
+	printf("{ %" PRIu32 " %" PRIu32 " %" PRIu32 " %" PRIu32 " }\n", vm->registers[0], vm->registers[1], vm->registers[2], vm->registers[3]);
+}
+#endif
+
+void vm_run(vm_runtime* vm) {
+	uint8_t* instruction = &vm->bytecode[vm->pc];
+	while (true) {
+#ifdef DEBUG
+		printf("running %02x\n", *instruction);
 #endif
 		switch (*instruction) {
 			case (OP_EXT):
@@ -29,26 +44,39 @@ void vm_run(vm_runtime *vm) {
 #endif
 				exit(0);
 				break;
-			case (OP_MOV):
+			case (OP_MOV_VALTOREG):
 				;
-				uint8_t value[4];
-				unsigned int target = (unsigned int) vm->btecode[vm->pc + 1];
-				for (int i = 0; i < 4; i++) {
-					value[i] = *(&vm->btecode[vm->pc + i]);
-				}
-				vm->registers[target] = value[0] | (value[1] << 8) | (value[2] << 16) | (value[3] << 24); 
-				vm->pc += 5;
+				unsigned int target = (unsigned int) vm->bytecode[vm->pc + 1];
+				
+				vm->registers[target] = parse_int(vm_read32(vm));
+				vm->pc += 1;
 #ifdef DEBUG
-				printf("moved %" PRIu32 " into %i\n", vm->registers[target], target);
-				printf("{ %" PRIu32 " %" PRIu32 " %" PRIu32 " %" PRIu32 " }\n", vm->registers[0], vm->registers[1], vm->registers[2], vm->registers[3]);
+				printf("moved %" PRIu32 " into reg %i\n", vm->registers[target], target);
+				print_reg(vm);
+#endif
+				break;
+			case (OP_MOV_REGTOREG):
+				vm->registers[vm->bytecode[vm->pc + 1]] = vm->registers[vm->bytecode[vm->pc]];
+#ifdef DEBUG
+				printf("moved reg %i into reg %i\n", vm->bytecode[vm->pc + 1], vm->bytecode[vm->pc + 2]);
+				print_reg(vm);
+#endif
+				vm->pc+=1;
+				break;
+			case (OP_GTO):
+				vm->pc = parse_int(vm_read32(vm));
+#ifdef DEBUG
+				printf("%02x\n", vm->bytecode[vm->pc]);
 #endif
 				break;
 			default:
 #ifdef DEBUG
+				printf("%" PRIu32 "\n", OP_GTO);
 				puts("PROGRAM ERROR");
 #endif
 				exit(1);
 		}
+		instruction = &vm->bytecode[vm->pc++];
 	}
 }
 
