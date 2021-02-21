@@ -19,23 +19,17 @@ vm_runtime* init_vm(uint8_t* bytecode) {
 uint8_t* vm_read32(vm_runtime *vm) {
 	uint8_t* res = calloc(sizeof(uint8_t), 4);
 	for (int i = 0; i < 4; i++) {
-		res[i] = *(&vm->bytecode[vm->pc + i + 2]);
+		res[i] = *(&vm->bytecode[vm->pc + i + 1]);
 	}
-	vm->pc += 5;
+	vm->pc += 4;
 	return res;
 }
-
-#ifdef DEBUG
-void print_reg(vm_runtime* vm) {
-	printf("{ %" PRIu32 " %" PRIu32 " %" PRIu32 " %" PRIu32 " }\n", vm->registers[0], vm->registers[1], vm->registers[2], vm->registers[3]);
-}
-#endif
 
 void vm_run(vm_runtime* vm) {
 	uint8_t* instruction = &vm->bytecode[vm->pc];
 	while (true) {
 #ifdef DEBUG
-		printf("running %02x\n", *instruction);
+		printf("running %02x, (pc = %i)\n", *instruction, vm->pc);
 #endif
 		switch (*instruction) {
 			case (OP_EXT):
@@ -48,27 +42,28 @@ void vm_run(vm_runtime* vm) {
 				;
 				unsigned int target = (unsigned int) vm->bytecode[vm->pc + 1];
 				
+				vm->pc++;
 				vm->registers[target] = parse_int(vm_read32(vm));
-				vm->pc += 1;
 #ifdef DEBUG
 				printf("moved %" PRIu32 " into reg %i\n", vm->registers[target], target);
 				print_reg(vm);
 #endif
 				break;
 			case (OP_MOV_REGTOREG):
-				vm->registers[vm->bytecode[vm->pc + 1]] = vm->registers[vm->bytecode[vm->pc]];
+				vm->registers[vm->bytecode[vm->pc + 2]] = vm->registers[vm->bytecode[vm->pc + 1]];
 #ifdef DEBUG
 				printf("moved reg %i into reg %i\n", vm->bytecode[vm->pc + 1], vm->bytecode[vm->pc + 2]);
 				print_reg(vm);
 #endif
-				vm->pc+=1;
+				vm->pc += 2;
 				break;
 			case (OP_GTO):
 				vm->pc = parse_int(vm_read32(vm));
+				instruction = &vm->bytecode[vm->pc];
 #ifdef DEBUG
-				printf("%02x\n", vm->bytecode[vm->pc]);
+				printf("jumping to %i (%02x)\n", vm->pc, vm->bytecode[vm->pc]);
 #endif
-				break;
+				continue;
 			default:
 #ifdef DEBUG
 				printf("%" PRIu32 "\n", OP_GTO);
@@ -76,7 +71,7 @@ void vm_run(vm_runtime* vm) {
 #endif
 				exit(1);
 		}
-		instruction = &vm->bytecode[vm->pc++];
+		instruction = &vm->bytecode[++vm->pc];
 	}
 }
 
