@@ -26,7 +26,7 @@ vm_runtime* init_vm(uint8_t* bytecode) {
 	res->pc = 0;
 	res->bytecode = bytecode;
 	res->sail_ram = vm_init_memory();
-	res->registers = (uint32_t*) calloc(4, sizeof(uint32_t)); // problematic line
+	res->registers = (uint32_t*) calloc(4, sizeof(uint32_t)); 
 	res->instruction = &res->bytecode[res->pc];
 	return res;
 }

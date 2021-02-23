@@ -12,11 +12,11 @@ void sail_instruction_EXT(vm_runtime *vm) {
 }
 
 void sail_instruction_GTO(vm_runtime *vm) {
-	vm->pc = parse_int(vm_read32(vm));
-	vm->instruction = &vm->bytecode[vm->pc];
+	vm->pc = parse_int(vm_read32(vm)) - 1;
 #ifdef DEBUG
-	printf("jumping to %i (%02x)\n", vm->pc, vm->bytecode[vm->pc]);
+	printf("jumping to %i (%02x)\n", vm->pc + 1, vm->bytecode[vm->pc + 1]);
 #endif
+	vm->instruction = &vm->bytecode[vm->pc];
 
 }
 
