@@ -5,19 +5,34 @@
 #include <inttypes.h>
 
 #include "global.h"
-#include "vm.h"
 #include "ram.h"
+#include "vm.h"
+
+#include "instructions.h"
+
+void (*vm_instructionset[])(vm_runtime*) = {
+	sail_instruction_EXT,
+	sail_instruction_MOVVALUETOREG,
+	sail_instruction_MOVREGTOREG,
+	sail_instruction_GTO
+	//OP_EXT = 0x00, /* exit program */
+	//OP_GTO = 0x09, /* goto bytecode (GTO <location>) */
+	//OP_MOV_VALTOREG = 0x10, /* mov value to register (MOV <register>) */
+	//OP_MOV_REGTOREG = 0x11
+};
 
 vm_runtime* init_vm(uint8_t* bytecode) {
-	vm_runtime* res = (vm_runtime*) calloc(sizeof(vm_runtime*), 1);
+	vm_runtime* res = (vm_runtime*) calloc(1, sizeof(vm_runtime));
+	res->pc = 0;
 	res->bytecode = bytecode;
 	res->sail_ram = vm_init_memory();
-	res->registers = calloc(sizeof(uint32_t), 4);
+	res->registers = (uint32_t*) calloc(4, sizeof(uint32_t)); // problematic line
+	res->instruction = &res->bytecode[res->pc];
 	return res;
 }
 
-uint8_t* vm_read32(vm_runtime *vm) {
-	uint8_t* res = calloc(sizeof(uint8_t), 4);
+uint8_t* vm_read32(vm_runtime* vm) {
+	uint8_t* res = malloc(4 * sizeof(uint8_t));
 	for (int i = 0; i < 4; i++) {
 		res[i] = *(&vm->bytecode[vm->pc + i + 1]);
 	}
@@ -26,63 +41,54 @@ uint8_t* vm_read32(vm_runtime *vm) {
 }
 
 void vm_run(vm_runtime* vm) {
-	uint8_t* instruction = &vm->bytecode[vm->pc];
 	while (true) {
 #ifdef DEBUG
-		printf("running %02x, (pc = %i)\n", *instruction, vm->pc);
-#endif
-		switch (*instruction) {
-			case (OP_EXT):
-#ifdef DEBUG
-				puts("PROGRAM EXIT");
-#endif
-				exit(0);
-				break;
-			case (OP_MOV_VALTOREG):
-				;
-				unsigned int target = (unsigned int) vm->bytecode[vm->pc + 1];
-				
-				vm->pc++;
-				vm->registers[target] = parse_int(vm_read32(vm));
-#ifdef DEBUG
-				printf("moved %" PRIu32 " into reg %i\n", vm->registers[target], target);
-				print_reg(vm);
-#endif
-				break;
-			case (OP_MOV_REGTOREG):
-				vm->registers[vm->bytecode[vm->pc + 2]] = vm->registers[vm->bytecode[vm->pc + 1]];
-#ifdef DEBUG
-				printf("moved reg %i into reg %i\n", vm->bytecode[vm->pc + 1], vm->bytecode[vm->pc + 2]);
-				print_reg(vm);
-#endif
-				vm->pc += 2;
-				break;
-			case (OP_GTO):
-				vm->pc = parse_int(vm_read32(vm));
-				instruction = &vm->bytecode[vm->pc];
-#ifdef DEBUG
-				printf("jumping to %i (%02x)\n", vm->pc, vm->bytecode[vm->pc]);
-#endif
-				continue;
-			default:
-#ifdef DEBUG
-				printf("%" PRIu32 "\n", OP_GTO);
-				puts("PROGRAM ERROR");
-#endif
-				exit(1);
-		}
-		instruction = &vm->bytecode[++vm->pc];
+		printf("running %02x, (pc = %i)\n", *vm->instruction, vm->pc);
+#endif		
+		vm_instructionset[*vm->instruction](vm);
+		
+		vm->instruction = &vm->bytecode[++vm->pc];
 	}
 }
 
 int main(int argc, char** argv) {
 	if (argc <= 1) {
-		printf(RED "Error: Please specify a source file\n" RESET);	
+#ifdef INTERACTIVE
+		printf(RED "Error: Please specify a source file\n" RESET);
+#endif
 		return 1;
 	}
+#ifdef INTERACTIVE	
+	if (argv[argc - 1][0] == '-') {
+		switch (argv[argc - 1][1]) {
+			case ('v'):
+				printf(
+
+BLUE "   _____       _ ___    ____  ___\n"
+"  / ___/____ _(_) / |  / /  |/  /\n"
+"  \\__ \\/ __ `/ / /| | / / /|_/ /\n"
+" ___/ / /_/ / / / | |/ / /  / / \n"
+"/____/\\__,_/_/_/  |___/_/  /_/  \n"
+RESET
+GREEN "*-----------------------------*\n" RESET
+#ifndef DEBUG
+GREEN "version: " RESET YELLOW VERSION "\n" RESET
+#else
+GREEN "version: " RESET YELLOW "DEBUG\n" RESET
+#endif
+GREEN "platform: " RESET YELLOW PLATFORM " (%s)\n" RESET
+
+"\nfor more information visit https://github.com/AndreiSva/Sail-VM\n"
+, ARCHITECTURE);
+				exit(0);
+		}
+	}
+#endif
 
 	if (access(argv[argc - 1], F_OK) != 0) {
+#ifdef INTERACTIVE
 		printf(RED "Error: file %s not found\n" RESET, argv[argc - 1]);
+#endif
 		return 1;
 	}
 

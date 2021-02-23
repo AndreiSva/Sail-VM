@@ -7,15 +7,9 @@
 
 #include "ram.h"
 
-typedef enum {
-	OP_EXT = 0x00, /* exit program */
-	OP_GTO = 0x09, /* goto bytecode (GTO <location>) */
-	OP_MOV_VALTOREG = 0x10, /* mov value to register (MOV <register>) */
-	OP_MOV_REGTOREG = 0x11
-} vm_opcodes;
-
 typedef struct {
 	uint8_t* bytecode;
+	uint8_t* instruction;
 	vm_memory* sail_ram;
 	unsigned int pc;
 
