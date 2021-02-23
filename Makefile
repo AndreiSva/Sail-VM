@@ -1,14 +1,17 @@
 CC = gcc
-CFLAGS = -Wall
+CFLAGS = -Wall -O2
 
-TARGET = main.o
+VERSION = \"2020.a\"
+TARGET = sailvm
 
 SRC = $(src/*.c)
 
 all:
-	$(CC) $(CFLAGS) src/*.c -o $(TARGET)
+	$(CC) $(CFLAGS) -D VERSION=$(VERSION) -D INTERACTIVE=1 src/*.c -o $(TARGET)
+minimal:
+	$(CC) $(CFLAGS) -D VERSION=$(VERSION) src/*.c -o $(TARGET)
 debug:
-	$(CC) $(CFLAGS) -g -D DEBUG=1 src/*.c -o $(TARGET)
+	$(CC) $(CFLAGS) -g -D INTERACTIVE=1 src/*.c -fsanitize=address -o $(TARGET)
 clean:
 	rm -rf $(TARGET)
 	rm -rf *.o
