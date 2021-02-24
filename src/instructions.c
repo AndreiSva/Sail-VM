@@ -11,6 +11,10 @@ void sail_instruction_EXT(vm_runtime *vm) {
 	exit(0);	
 }
 
+void sail_instruction_SYSCALL(vm_runtime *vm) {
+	return;
+}
+
 void sail_instruction_GTO(vm_runtime *vm) {
 	vm->pc = parse_int(vm_read32(vm)) - 1;
 #ifdef DEBUG
@@ -19,6 +23,9 @@ void sail_instruction_GTO(vm_runtime *vm) {
 	vm->instruction = &vm->bytecode[vm->pc];
 
 }
+
+
+/* MOVE */
 
 void sail_instruction_MOVREGTOREG(vm_runtime *vm) {
 	vm->registers[vm->bytecode[vm->pc + 2]] = vm->registers[vm->bytecode[vm->pc + 1]];
@@ -37,6 +44,32 @@ void sail_instruction_MOVVALUETOREG(vm_runtime *vm) {
 	vm->registers[target] = parse_int(vm_read32(vm));
 #ifdef DEBUG
 	printf("moved %" PRIu32 " into reg %i\n", vm->registers[target], target);
+	print_reg(vm);
+#endif
+}
+
+/* MATH */
+
+void sail_instruction_ADDVALTOREG(vm_runtime *vm) {
+	unsigned int target = (unsigned int) vm->bytecode[++vm->pc];
+	unsigned int value = parse_int(vm_read32(vm));
+
+	vm->registers[target] += value;
+
+#ifdef DEBUG
+	printf("adding %" PRIu32 " into reg %i\n", value, target);
+	print_reg(vm);
+#endif
+}
+
+void sail_instruction_ADDREGTOREG(vm_runtime *vm) {
+	unsigned int target1 = (unsigned int) vm->bytecode[++vm->pc];
+	unsigned int target2 = (unsigned int) vm->bytecode[++vm->pc];
+	
+	vm->registers[target1] += vm->registers[target2];
+
+#ifdef DEBUG
+	printf("adding reg %i into reg %i\n", target2, target1);
 	print_reg(vm);
 #endif
 }

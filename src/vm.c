@@ -11,14 +11,13 @@
 #include "instructions.h"
 
 void (*vm_instructionset[])(vm_runtime*) = {
-	sail_instruction_EXT,
-	sail_instruction_MOVVALUETOREG,
-	sail_instruction_MOVREGTOREG,
-	sail_instruction_GTO
-	//OP_EXT = 0x00, /* exit program */
-	//OP_GTO = 0x09, /* goto bytecode (GTO <location>) */
-	//OP_MOV_VALTOREG = 0x10, /* mov value to register (MOV <register>) */
-	//OP_MOV_REGTOREG = 0x11
+	sail_instruction_EXT, 			/* 0x00 */
+	sail_instruction_SYSCALL,		/* 0x01 */
+	sail_instruction_MOVVALUETOREG, 	/* 0x02 */
+	sail_instruction_MOVREGTOREG, 		/* 0x03 */
+	sail_instruction_GTO,			/* 0x04 */
+	sail_instruction_ADDVALTOREG,		/* 0x05 */
+	sail_instruction_ADDREGTOREG		/* 0x06 */
 };
 
 vm_runtime* init_vm(uint8_t* bytecode) {
