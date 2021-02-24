@@ -13,11 +13,18 @@
 void (*vm_instructionset[])(vm_runtime*) = {
 	sail_instruction_EXT, 			/* 0x00 */
 	sail_instruction_SYSCALL,		/* 0x01 */
+	
+	// MOV
 	sail_instruction_MOVVALUETOREG, 	/* 0x02 */
 	sail_instruction_MOVREGTOREG, 		/* 0x03 */
+
 	sail_instruction_GTO,			/* 0x04 */
+
+	//MATH
 	sail_instruction_ADDVALTOREG,		/* 0x05 */
-	sail_instruction_ADDREGTOREG		/* 0x06 */
+	sail_instruction_ADDREGTOREG,		/* 0x06 */
+	sail_instruction_MULREG,		/* 0x07 */
+	sail_instruction_DIVREG			/* 0x08 */
 };
 
 vm_runtime* init_vm(uint8_t* bytecode) {
@@ -47,6 +54,7 @@ void vm_run(vm_runtime* vm) {
 		vm_instructionset[*vm->instruction](vm);
 		
 		vm->instruction = &vm->bytecode[++vm->pc];
+		sleep(1);
 	}
 }
 
