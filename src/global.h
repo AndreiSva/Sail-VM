@@ -47,7 +47,7 @@
 #define DEBUG 1
 #endif
 
-uint8_t parse_int(uint8_t* x);
+uint32_t parse_int(uint8_t* x);
 
 #ifdef DEBUG
 void print_reg(vm_runtime* vm);

@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 
-uint8_t parse_int(uint8_t* x) {
+uint32_t parse_int(uint8_t* x) {
 	uint8_t y[4] = {x[0], x[1], x[2], x[3]};
 	free(x);
 	return y[0] | (y[1] << 8) | (y[2] << 16) | (y[3] << 24);
