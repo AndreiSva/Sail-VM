@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -O2
 
-VERSION = \"2020.a\"
+VERSION = \"2020.b\"
 TARGET = sailvm
 
 SRC = $(src/*.c)
