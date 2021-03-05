@@ -10,10 +10,11 @@ typedef enum {
 	flag_nequal,
 	flag_greaterthan,
 	flag_lesserthan,
+	flags_max
 } sail_flag_types;
 
 typedef struct {
-	uint8_t value;	
+	bool flags[flags_max]; 
 } vm_flags;
 
 bool vm_get_flag(vm_flags* flags, sail_flag_types flag);
