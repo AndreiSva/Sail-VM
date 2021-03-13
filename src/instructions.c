@@ -28,8 +28,10 @@ void sail_instruction_SYSCALL(vm_runtime *vm) {
 /* COMP */
 
 void sail_instruction_COMP_REGTOREG(vm_runtime *vm) {
-	uint32_t reg1 = parse_int(vm_read32(vm));
-	uint32_t reg2 = parse_int(vm_read32(vm));
+	uint32_t reg1 = vm->registers[vm->bytecode[++vm->pc]];
+	uint32_t reg2 = vm->registers[vm->bytecode[++vm->pc]];
+
+	printf("%i %i\n", reg1, reg2);
 
 	compare(vm, reg1, reg2);
 }
@@ -79,7 +81,9 @@ void sail_instruction_MOV_REGTOREG(vm_runtime *vm) {
 
 void sail_instruction_MOV_VALUETOREG(vm_runtime *vm) {
 	vm->pc++;
-	vm->registers[vm->bytecode[vm->pc]] = parse_int(vm_read32(vm));
+	int reg_index = vm->bytecode[vm->pc];
+	vm->registers[reg_index] = parse_int(vm_read32(vm));;
+	
 #ifdef DEBUG
 	print_reg(vm);
 #endif

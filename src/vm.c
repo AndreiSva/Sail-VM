@@ -28,12 +28,13 @@ void (*vm_instructionset[])(vm_runtime*) = {
 	sail_instruction_MUL_REG,		/* 0x06 */
 	sail_instruction_DIV_REG,		/* 0x07 */
 
-	sail_instruction_GTO,			/* 0x08 */
+	sail_instruction_GTO_IFEQUAL,		/* 0x08  */
 	sail_instruction_GTO,			/* 0x09 */
-	sail_instruction_GTO_IFEQUAL,		/* 0xA  */
-	sail_instruction_GTO_IFNEQUAL,		/* 0xB  */
-	sail_instruction_GTO_IFLESS, 		/* 0xC  */
-	sail_instruction_GTO_IFMORE,		/* 0xD  */
+	sail_instruction_GTO_IFNEQUAL,		/* 0xA  */
+	sail_instruction_GTO_IFLESS, 		/* 0xB  */
+	sail_instruction_GTO_IFMORE,		/* 0xC  */
+
+	sail_instruction_COMP_REGTOREG,		/* 0xD  */
 	sail_placeholder,			/* 0xE  */
 	sail_placeholder,			/* 0xF  */
 	sail_placeholder,			/* 0x10 */
@@ -69,7 +70,7 @@ vm_runtime* init_vm(uint8_t* bytecode) {
 	res->pc = 0;
 	res->bytecode = bytecode;
 	res->sail_ram = vm_init_memory();
-	res->registers = (uint32_t*) calloc(4, sizeof(uint32_t)); 
+	res->registers = (uint32_t*) calloc(4, sizeof(uint32_t*)); 
 	res->instruction = &res->bytecode[res->pc];
 	return res;
 }
