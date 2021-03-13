@@ -4,20 +4,34 @@
 #include "vm.h"
 #include "instructions.h"
 #include "global.h"
+#include "flags.h"
 
-void compare(uint8_t a, uint8_t b) {
-	
+void compare(vm_runtime* vm, uint32_t a, uint32_t b) {
+	vm_set_flag(&vm->flags, flag_equal, a == b);
+	vm_set_flag(&vm->flags, flag_nequal, a != b);
+	vm_set_flag(&vm->flags, flag_greaterthan, a > b);
+	vm_set_flag(&vm->flags, flag_lesserthan, a < b);
 }
 
 void sail_instruction_EXT(vm_runtime *vm) {
 #ifdef DEBUG
-	puts("PROGRAM EXIT");
+	printf("PROGRAM EXIT WITH EXIT CODE %i\n", vm->bytecode[vm->pc + 1]);
 #endif
-	exit(0);	
+	exit(vm->bytecode[vm->pc + 1]);	
 }
 
 void sail_instruction_SYSCALL(vm_runtime *vm) {
 	return;
+}
+
+
+/* COMP */
+
+void sail_instruction_COMP_REGTOREG(vm_runtime *vm) {
+	uint32_t reg1 = parse_int(vm_read32(vm));
+	uint32_t reg2 = parse_int(vm_read32(vm));
+
+	compare(vm, reg1, reg2);
 }
 
 /* GOTO */
@@ -31,9 +45,25 @@ void sail_instruction_GTO(vm_runtime *vm) {
 
 }
 
-void sail_instruction_GTO_COMPREGTOREG(vm_runtime* vm) {
-
+void sail_instruction_GTO_IFEQUAL(vm_runtime *vm) {
+	if (vm_get_flag(&vm->flags, flag_equal)) {
+		vm->pc = parse_int(vm_read32(vm)) - 1;
+		vm->instruction = &vm->bytecode[vm->pc];
+	}
 }
+
+void sail_instruction_GTO_IFLESS(vm_runtime *vm) {
+	return;
+}
+
+void sail_instruction_GTO_IFMORE(vm_runtime *vm) {
+	return;
+}
+
+void sail_instruction_GTO_IFNEQUAL(vm_runtime *vm) {
+	return;
+}
+
 
 /* MOV */
 

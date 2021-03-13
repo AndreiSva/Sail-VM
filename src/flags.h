@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-#include "global.h"
-
 typedef enum {
 	flag_equal,
 	flag_nequal,
@@ -14,10 +12,10 @@ typedef enum {
 } sail_flag_types;
 
 typedef struct {
-	bool flags[flags_max]; 
+	uint8_t flags[flags_max]; 
 } vm_flags;
 
-bool vm_get_flag(vm_flags* flags, sail_flag_types flag);
-void vm_set_flag(vm_flags* flags, sail_flag_types type, bool value);
+uint8_t vm_get_flag(vm_flags* flags, sail_flag_types flag);
+void vm_set_flag(vm_flags* flags, sail_flag_types type, uint8_t value);
 
 #endif

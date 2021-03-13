@@ -10,6 +10,10 @@
 
 #include "instructions.h"
 
+void sail_placeholder(vm_runtime* vm) {
+	return;
+}
+
 void (*vm_instructionset[])(vm_runtime*) = {
 	sail_instruction_EXT, 			/* 0x00 */
 	sail_instruction_SYSCALL,		/* 0x01 */
@@ -18,13 +22,46 @@ void (*vm_instructionset[])(vm_runtime*) = {
 	sail_instruction_MOV_VALUETOREG, 	/* 0x02 */
 	sail_instruction_MOV_REGTOREG, 		/* 0x03 */
 
-	sail_instruction_GTO,			/* 0x04 */
-
 	//MATH
-	sail_instruction_ADD_VALTOREG,		/* 0x05 */
-	sail_instruction_ADD_REGTOREG,		/* 0x06 */
-	sail_instruction_MUL_REG,		/* 0x07 */
-	sail_instruction_DIV_REG		/* 0x08 */
+	sail_instruction_ADD_VALTOREG,		/* 0x04 */
+	sail_instruction_ADD_REGTOREG,		/* 0x05 */
+	sail_instruction_MUL_REG,		/* 0x06 */
+	sail_instruction_DIV_REG,		/* 0x07 */
+
+	sail_instruction_GTO,			/* 0x08 */
+	sail_instruction_GTO,			/* 0x09 */
+	sail_instruction_GTO_IFEQUAL,		/* 0xA  */
+	sail_instruction_GTO_IFNEQUAL,		/* 0xB  */
+	sail_instruction_GTO_IFLESS, 		/* 0xC  */
+	sail_instruction_GTO_IFMORE,		/* 0xD  */
+	sail_placeholder,			/* 0xE  */
+	sail_placeholder,			/* 0xF  */
+	sail_placeholder,			/* 0x10 */
+	sail_placeholder,			/* 0x11 */
+	sail_placeholder,			/* 0x12  */
+	sail_placeholder,			/* 0x13  */
+	sail_placeholder,			/* 0x14  */
+	sail_placeholder,			/* 0x15  */
+	sail_placeholder,			/* 0x16  */
+	sail_placeholder,			/* 0x17  */
+	sail_placeholder,			/* 0x18  */
+	sail_placeholder,			/* 0x19  */
+	sail_placeholder,			/* 0x1A  */
+	sail_placeholder,			/* 0x1B  */
+	sail_placeholder,			/* 0x1C  */
+	sail_placeholder,			/* 0x1D  */
+	sail_placeholder,			/* 0x1E  */
+	sail_placeholder,			/* 0x1F  */
+	sail_placeholder,			/* 0x20  */
+	sail_placeholder,			/* 0x21  */
+	sail_placeholder,			/* 0x22  */
+	sail_placeholder,			/* 0x23  */
+	sail_placeholder,			/* 0x24  */
+	sail_placeholder,			/* 0x25  */
+	sail_placeholder,			/* 0x26  */
+	sail_placeholder,			/* 0x27  */
+	sail_placeholder,			/* 0x28  */
+	sail_placeholder,			/* 0x29  */
 };
 
 vm_runtime* init_vm(uint8_t* bytecode) {
@@ -104,6 +141,8 @@ GREEN "platform: " RESET YELLOW PLATFORM " (%s)\n" RESET
 	rewind(source);
 	
 	uint8_t* bytecode = malloc(program_size);
+
+	// causes a warning on some libc
 	fread(bytecode, 1, program_size, source);
 	
 #ifdef DEBUG

@@ -1,7 +1,6 @@
 #ifndef __global
 #define __global
 
-#include "vm.h"
 #include <stdint.h>
 #define bool char
 #define true 1
@@ -36,8 +35,8 @@
 #define PLATFORM "Win32"
 #elif TARGET_OS_MAC
 #define PLATFORM "MacOS"
-#elif BSD
-#define PLATFORM "BSD"
+#elif __FreeBSD__
+#define PLATFORM "FreeBSD"
 #else
 #define PLATFORM "unknown"
 #endif
@@ -47,9 +46,11 @@
 #define DEBUG 1
 #endif
 
+// parse 32 bit integer out of four 8 bit integers
 uint32_t parse_int(uint8_t* x);
 
 #ifdef DEBUG
+#include "vm.h"
 void print_reg(vm_runtime* vm);
 #endif
 

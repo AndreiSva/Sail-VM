@@ -32,4 +32,5 @@ void sail_instruction_DIV_REG(vm_runtime* vm);
 void sail_instruction_AND_REG(vm_runtime* vm);
 void sail_instruction_OR_REG(vm_runtime* vm);
 void sail_instruction_NOT_REG(vm_runtime* vm);
+
 #endif
