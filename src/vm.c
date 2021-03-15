@@ -92,6 +92,7 @@ void vm_run(vm_runtime* vm) {
 		vm_instructionset[*vm->instruction](vm);
 		
 		vm->instruction = &vm->bytecode[++vm->pc];
+		//sleep(1);
 	}
 }
 

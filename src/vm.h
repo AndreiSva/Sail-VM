@@ -14,11 +14,7 @@ typedef struct {
 	vm_memory* sail_ram;
 	unsigned int pc;
 	vm_flags flags;
-
 	uint32_t* registers;
-
-
-	uint32_t* temp; 
 } vm_runtime;
 
 vm_runtime* init_vm(uint8_t* bytecode);

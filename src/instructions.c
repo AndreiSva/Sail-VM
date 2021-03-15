@@ -31,7 +31,9 @@ void sail_instruction_COMP_REGTOREG(vm_runtime *vm) {
 	uint32_t reg1 = vm->registers[vm->bytecode[++vm->pc]];
 	uint32_t reg2 = vm->registers[vm->bytecode[++vm->pc]];
 
-	printf("%i %i\n", reg1, reg2);
+#ifdef DEBUG
+	printf("comparing %i and %i\n", reg1, reg2);
+#endif
 
 	compare(vm, reg1, reg2);
 }
@@ -48,8 +50,9 @@ void sail_instruction_GTO(vm_runtime *vm) {
 }
 
 void sail_instruction_GTO_IFEQUAL(vm_runtime *vm) {
+	uint32_t value = parse_int(vm_read32(vm));
 	if (vm_get_flag(&vm->flags, flag_equal)) {
-		vm->pc = parse_int(vm_read32(vm)) - 1;
+		vm->pc = value - 1;
 		vm->instruction = &vm->bytecode[vm->pc];
 	}
 }
@@ -63,7 +66,11 @@ void sail_instruction_GTO_IFMORE(vm_runtime *vm) {
 }
 
 void sail_instruction_GTO_IFNEQUAL(vm_runtime *vm) {
-	return;
+	uint32_t value = parse_int(vm_read32(vm));
+	if (vm_get_flag(&vm->flags, flag_nequal)) {
+		vm->pc = value - 1;
+		vm->instruction = &vm->bytecode[vm->pc];
+	}
 }
 
 
@@ -93,10 +100,18 @@ void sail_instruction_MOV_VALUETOREG(vm_runtime *vm) {
 
 void sail_instruction_ADD_VALTOREG(vm_runtime *vm) {
 	vm->pc++;
-	vm->registers[vm->bytecode[vm->pc]] += parse_int(vm_read32(vm));
+	int reg_index = vm->bytecode[vm->pc];
+	vm->registers[reg_index] += parse_int(vm_read32(vm));;
+	
 #ifdef DEBUG
 	print_reg(vm);
 #endif
+
+//	vm->pc++;
+//	vm->registers[vm->bytecode[vm->pc]] += parse_int(vm_read32(vm));
+//#ifdef DEBUG
+//	print_reg(vm);
+//#endif
 }
 
 void sail_instruction_SUB_VALTOREG(vm_runtime *vm) {
