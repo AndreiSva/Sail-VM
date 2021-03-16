@@ -13,6 +13,16 @@ void compare(vm_runtime* vm, uint32_t a, uint32_t b) {
 	vm_set_flag(&vm->flags, flag_lesserthan, a < b);
 }
 
+void goto_addr(vm_runtime* vm, uint32_t addr, char condition) {
+	if (condition) {
+		vm->pc = addr - 1;
+		vm->instruction = &vm->bytecode[vm->pc];
+#ifdef DEBUG
+		printf("jumping to %i (%02x)\n", vm->pc + 1, vm->bytecode[vm->pc + 1]);
+#endif
+	}
+}
+
 void sail_instruction_EXT(vm_runtime *vm) {
 #ifdef DEBUG
 	printf("PROGRAM EXIT WITH EXIT CODE %i\n", vm->bytecode[vm->pc + 1]);
@@ -41,36 +51,28 @@ void sail_instruction_COMP_REGTOREG(vm_runtime *vm) {
 /* GOTO */
 
 void sail_instruction_GTO(vm_runtime *vm) {
-		vm->pc = parse_int(vm_read32(vm)) - 1;
-#ifdef DEBUG
-		printf("jumping to %i (%02x)\n", vm->pc + 1, vm->bytecode[vm->pc + 1]);
-#endif
-		vm->instruction = &vm->bytecode[vm->pc];
-
+	uint32_t value = parse_int(vm_read32(vm));
+	goto_addr(vm, value, 1);
 }
 
 void sail_instruction_GTO_IFEQUAL(vm_runtime *vm) {
 	uint32_t value = parse_int(vm_read32(vm));
-	if (vm_get_flag(&vm->flags, flag_equal)) {
-		vm->pc = value - 1;
-		vm->instruction = &vm->bytecode[vm->pc];
-	}
+	goto_addr(vm, value, vm_get_flag(&vm->flags, flag_equal));
 }
 
 void sail_instruction_GTO_IFLESS(vm_runtime *vm) {
-	return;
+	uint32_t value = parse_int(vm_read32(vm));
+	goto_addr(vm, value, vm_get_flag(&vm->flags, flag_lesserthan));
 }
 
 void sail_instruction_GTO_IFMORE(vm_runtime *vm) {
-	return;
+	uint32_t value = parse_int(vm_read32(vm));
+	goto_addr(vm, value, vm_get_flag(&vm->flags, flag_greaterthan));
 }
 
 void sail_instruction_GTO_IFNEQUAL(vm_runtime *vm) {
 	uint32_t value = parse_int(vm_read32(vm));
-	if (vm_get_flag(&vm->flags, flag_nequal)) {
-		vm->pc = value - 1;
-		vm->instruction = &vm->bytecode[vm->pc];
-	}
+	goto_addr(vm, value, vm_get_flag(&vm->flags, flag_nequal));
 }
 
 
