@@ -1,6 +1,7 @@
-#include "stack.h"
 #include <stdint.h>
 #include <stdlib.h>
+
+#include "stack.h"
 
 vm_stack* vm_stack_init() {
 	vm_stack* stack = malloc(sizeof(vm_stack*));

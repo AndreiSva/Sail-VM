@@ -31,7 +31,16 @@ void sail_instruction_EXT(vm_runtime *vm) {
 }
 
 void sail_instruction_SYSCALL(vm_runtime *vm) {
-	return;
+	switch (vm->registers[0]) {
+		case call_clear:
+#ifdef __WIN32
+#include <conio.h>
+#else
+#define clrscr() printf("\e[1;1H\e[2J")
+#endif
+			clrscr();
+			break;
+	}
 }
 
 
@@ -52,7 +61,8 @@ void sail_instruction_COMP_REGTOREG(vm_runtime *vm) {
 
 void sail_instruction_GTO(vm_runtime *vm) {
 	uint32_t value = parse_int(vm_read32(vm));
-	goto_addr(vm, value, 1);
+	vm->pc = value - 1;
+	vm->instruction = &vm->bytecode[vm->pc];
 }
 
 void sail_instruction_GTO_IFEQUAL(vm_runtime *vm) {
