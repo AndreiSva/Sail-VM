@@ -10,7 +10,7 @@ typedef struct {
 } vm_stack;
 
 uint32_t* vm_stack_peek(vm_stack* stack);
-void vm_stack_push(vm_stack* stack, uint8_t value);
+void vm_stack_push(vm_stack* stack, uint32_t value);
 uint32_t vm_stack_pop(vm_stack* stack);
 
 vm_stack* vm_stack_init();

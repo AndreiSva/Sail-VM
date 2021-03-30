@@ -7,13 +7,17 @@
 
 #include "ram.h"
 #include "flags.h"
+#include "stack.h"
 
 typedef struct {
 	uint8_t* bytecode;
-	uint8_t* instruction;
-	vm_memory* sail_ram;
-	unsigned int pc;
+	uint8_t instruction;
+
+	vm_memory sail_ram;
 	vm_flags flags;
+	vm_stack stack;
+
+	unsigned int pc;
 	uint32_t* registers;
 } vm_runtime;
 

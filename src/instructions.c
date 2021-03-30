@@ -16,7 +16,7 @@ void compare(vm_runtime* vm, uint32_t a, uint32_t b) {
 void goto_addr(vm_runtime* vm, uint32_t addr, char condition) {
 	if (condition) {
 		vm->pc = addr - 1;
-		vm->instruction = &vm->bytecode[vm->pc];
+		vm->instruction = vm->bytecode[vm->pc];
 #ifdef DEBUG
 		printf("jumping to %i (%02x)\n", vm->pc + 1, vm->bytecode[vm->pc + 1]);
 #endif
@@ -62,7 +62,7 @@ void sail_instruction_COMP_REGTOREG(vm_runtime* vm) {
 void sail_instruction_GTO(vm_runtime* vm) {
 	uint32_t value = parse_int(vm_read32(vm));
 	vm->pc = value - 1;
-	vm->instruction = &vm->bytecode[vm->pc];
+	vm->instruction = vm->bytecode[vm->pc];
 }
 
 void sail_instruction_GTO_IFEQUAL(vm_runtime* vm) {
@@ -112,7 +112,8 @@ void sail_instruction_MOV_VALUETOREG(vm_runtime* vm) {
 /* STACK */
 
 void sail_instruction_PUSH_REG(vm_runtime* vm) {
-
+	vm_stack_push(&vm->stack, vm->registers[vm->bytecode[vm->pc]]);
+	vm->pc++;
 }
 
 

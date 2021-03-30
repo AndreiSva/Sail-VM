@@ -69,9 +69,9 @@ vm_runtime* init_vm(uint8_t* bytecode) {
 	vm_runtime* res = (vm_runtime*) calloc(1, sizeof(vm_runtime));
 	res->pc = 0;
 	res->bytecode = bytecode;
-	res->sail_ram = vm_init_memory();
+	res->sail_ram = *vm_init_memory();
 	res->registers = (uint32_t*) calloc(4, sizeof(uint32_t*)); 
-	res->instruction = &res->bytecode[res->pc];
+	res->instruction = res->bytecode[res->pc];
 	return res;
 }
 
@@ -87,11 +87,11 @@ uint8_t* vm_read32(vm_runtime* vm) {
 void vm_run(vm_runtime* vm) {
 	while (true) {
 #ifdef DEBUG
-		printf("running %02x, (pc = %i)\n", *vm->instruction, vm->pc);
+		printf("running %02x, (pc = %i)\n", vm->instruction, vm->pc);
 #endif		
-		vm_instructionset[*vm->instruction](vm);
+		vm_instructionset[vm->instruction](vm);
 		
-		vm->instruction = &vm->bytecode[++vm->pc];
+		vm->instruction = vm->bytecode[++vm->pc];
 		//sleep(1);
 	}
 }
