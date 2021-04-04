@@ -21,7 +21,7 @@ typedef struct {
 	uint32_t* registers;
 } vm_runtime;
 
-vm_runtime* init_vm(uint8_t* bytecode);
+vm_runtime init_vm(uint8_t* bytecode);
 void vm_run(vm_runtime* vm);
 
 // read the next 4 bytes into an array

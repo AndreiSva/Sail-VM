@@ -1,6 +1,8 @@
 #include <inttypes.h>
 #include <stdint.h>
+#include <stdio.h>
 
+#include "stack.h"
 #include "vm.h"
 #include "instructions.h"
 #include "global.h"
@@ -16,7 +18,6 @@ void compare(vm_runtime* vm, uint32_t a, uint32_t b) {
 void goto_addr(vm_runtime* vm, uint32_t addr, char condition) {
 	if (condition) {
 		vm->pc = addr - 1;
-		vm->instruction = vm->bytecode[vm->pc];
 #ifdef DEBUG
 		printf("jumping to %i (%02x)\n", vm->pc + 1, vm->bytecode[vm->pc + 1]);
 #endif
@@ -62,7 +63,6 @@ void sail_instruction_COMP_REGTOREG(vm_runtime* vm) {
 void sail_instruction_GTO(vm_runtime* vm) {
 	uint32_t value = parse_int(vm_read32(vm));
 	vm->pc = value - 1;
-	vm->instruction = vm->bytecode[vm->pc];
 }
 
 void sail_instruction_GTO_IFEQUAL(vm_runtime* vm) {
@@ -100,7 +100,7 @@ void sail_instruction_MOV_REGTOREG(vm_runtime* vm) {
 
 void sail_instruction_MOV_VALUETOREG(vm_runtime* vm) {
 	vm->pc++;
-	int reg_index = vm->bytecode[vm->pc];
+	uint8_t reg_index = vm->bytecode[vm->pc];
 	vm->registers[reg_index] = parse_int(vm_read32(vm));;
 	
 #ifdef DEBUG
@@ -112,16 +112,25 @@ void sail_instruction_MOV_VALUETOREG(vm_runtime* vm) {
 /* STACK */
 
 void sail_instruction_PUSH_REG(vm_runtime* vm) {
-	vm_stack_push(&vm->stack, vm->registers[vm->bytecode[vm->pc]]);
+	vm_stack_push(&vm->stack, vm->registers[vm->bytecode[vm->pc + 1]]);
 	vm->pc++;
 }
 
+
+void sail_instruction_PUSH_VALUE(vm_runtime* vm) {
+	uint32_t value = parse_int(vm_read32(vm));
+	vm_stack_push(&vm->stack, value);
+#ifdef DEBUG
+	print_stack(&vm->stack);
+	printf("pushing value %d to stack\n", value);
+#endif
+}
 
 /* MATH */
 
 void sail_instruction_ADD_VALTOREG(vm_runtime* vm) {
 	vm->pc++;
-	int reg_index = vm->bytecode[vm->pc];
+	uint8_t reg_index = vm->bytecode[vm->pc];
 	vm->registers[reg_index] += parse_int(vm_read32(vm));;
 	
 #ifdef DEBUG

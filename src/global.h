@@ -52,6 +52,7 @@ uint32_t parse_int(uint8_t* x);
 #ifdef DEBUG
 #include "vm.h"
 void print_reg(vm_runtime* vm);
+void print_stack(vm_stack* stack);
 #endif
 
 

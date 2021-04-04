@@ -15,6 +15,14 @@ uint32_t parse_int(uint8_t* x) {
 void print_reg(vm_runtime* vm) {
 	printf("{ %" PRIu32 " %" PRIu32 " %" PRIu32 " %" PRIu32 " }\n", vm->registers[0], vm->registers[1], vm->registers[2], vm->registers[3]);
 }
+
+void print_stack(vm_stack *stack) {
+	printf("stack (%li): { ", stack->stack_size);
+	for (int i = 0; i < stack->stack_size; i++) {
+		printf("%i ", stack->stack[i]);
+	}
+	printf("}\n");
+}
 #endif
 
 

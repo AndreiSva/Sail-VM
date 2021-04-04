@@ -41,8 +41,8 @@ void (*vm_instructionset[])(vm_runtime*) = {
 	sail_placeholder,			/* 0x11 */
 	sail_placeholder,			/* 0x12  */
 	sail_placeholder,			/* 0x13  */
-	sail_placeholder,			/* 0x14  */
-	sail_placeholder,			/* 0x15  */
+	sail_instruction_PUSH_REG,			/* 0x14  */
+	sail_instruction_PUSH_VALUE,			/* 0x15 */
 	sail_placeholder,			/* 0x16  */
 	sail_placeholder,			/* 0x17  */
 	sail_placeholder,			/* 0x18  */
@@ -65,13 +65,14 @@ void (*vm_instructionset[])(vm_runtime*) = {
 	sail_placeholder,			/* 0x29  */
 };
 
-vm_runtime* init_vm(uint8_t* bytecode) {
-	vm_runtime* res = (vm_runtime*) calloc(1, sizeof(vm_runtime));
-	res->pc = 0;
-	res->bytecode = bytecode;
-	res->sail_ram = *vm_init_memory();
-	res->registers = (uint32_t*) calloc(4, sizeof(uint32_t*)); 
-	res->instruction = res->bytecode[res->pc];
+vm_runtime init_vm(uint8_t* bytecode) {
+	vm_runtime res; 
+	res.pc = 0;
+	res.bytecode = bytecode;
+	res.sail_ram = vm_init_memory();
+	res.stack = vm_init_stack();
+	res.registers = (uint32_t*) calloc(4, sizeof(uint32_t*)); 
+	res.instruction = res.bytecode[res.pc];
 	return res;
 }
 
@@ -155,6 +156,6 @@ GREEN "platform: " RESET YELLOW PLATFORM " (%s)\n" RESET
 	printf("\n");
 #endif
 
-	vm_runtime* sail_vm = init_vm(bytecode);
-	vm_run(sail_vm);
+	vm_runtime sail_vm = init_vm(bytecode);
+	vm_run(&sail_vm);
 }

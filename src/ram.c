@@ -1,7 +1,7 @@
 #include "ram.h"
 
-vm_memory* vm_init_memory() {
-	vm_memory* new_mem = calloc(1, sizeof(*new_mem));
+vm_memory vm_init_memory() {
+	vm_memory new_mem; 
 	return new_mem;
 }
 

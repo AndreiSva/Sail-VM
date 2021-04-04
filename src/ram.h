@@ -16,6 +16,6 @@ uint32_t vm_ram_read(vm_memory* target, uint32_t);
 /* realocates the target's ram by the desired amount */
 void vm_ram_increase(vm_memory* target, unsigned long amount);
 
-vm_memory* vm_init_memory();
+vm_memory vm_init_memory();
 
 #endif
