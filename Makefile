@@ -11,7 +11,7 @@ all:
 minimal:
 	$(CC) $(CFLAGS) -D VERSION=$(VERSION) src/*.c -o $(TARGET)
 debug:
-	$(CC) $(CFLAGS) -g -D INTERACTIVE=1 src/*.c -fsanitize=address -o $(TARGET)
+	$(CC) $(CFLAGS) -g -D INTERACTIVE=1 -D DELAY=$(delay) src/*.c -fsanitize=address -o $(TARGET)
 clean:
 	rm -rf $(TARGET)
 	rm -rf *.o
