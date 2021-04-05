@@ -37,6 +37,8 @@
 #define PLATFORM "MacOS"
 #elif __FreeBSD__
 #define PLATFORM "FreeBSD"
+#elif __OpenBSD__
+#define PLATFORM "OpenBSD"
 #else
 #define PLATFORM "unknown"
 #endif
@@ -51,7 +53,7 @@ uint32_t parse_int(uint8_t* x);
 
 #ifdef DEBUG
 #include "vm.h"
-void print_reg(vm_runtime* vm);
+void print_reg(uint32_t* registers);
 void print_stack(vm_stack* stack);
 #endif
 

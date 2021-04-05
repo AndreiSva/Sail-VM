@@ -43,8 +43,8 @@ void (*vm_instructionset[])(vm_runtime*) = {
 	sail_placeholder,			/* 0x13  */
 	sail_instruction_PUSH_REG,			/* 0x14  */
 	sail_instruction_PUSH_VALUE,			/* 0x15 */
-	sail_placeholder,			/* 0x16  */
-	sail_placeholder,			/* 0x17  */
+	sail_instruction_POP_REG,			/* 0x16 */
+	sail_instruction_DUPE,				/* 0x17 */
 	sail_placeholder,			/* 0x18  */
 	sail_placeholder,			/* 0x19  */
 	sail_placeholder,			/* 0x1A  */
@@ -93,7 +93,9 @@ void vm_run(vm_runtime* vm) {
 		vm_instructionset[vm->instruction](vm);
 		
 		vm->instruction = vm->bytecode[++vm->pc];
-		//sleep(1);
+#ifdef DELAY
+		sleep(DELAY);
+#endif
 	}
 }
 

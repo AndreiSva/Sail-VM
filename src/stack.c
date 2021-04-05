@@ -14,19 +14,19 @@ vm_stack vm_init_stack() {
 }
 
 uint32_t* vm_stack_peek(vm_stack *stack) {
-	return &stack->stack[stack->stack_size];
+	return &stack->stack[stack->stack_size - 1];
 }
 
 void vm_stack_push(vm_stack *stack, uint32_t value) {
 	stack->stack_size++;
 
-	stack->stack = (uint32_t*) realloc(stack->stack, stack->stack_size * sizeof(uint32_t));
+	stack->stack = (uint32_t*) realloc(stack->stack, stack->stack_size * sizeof(uint32_t*));
 
 	stack->stack[stack->stack_size - 1] = value;
 }
 
 uint32_t vm_stack_pop(vm_stack *stack) {
-	uint32_t popped_value = stack->stack[stack->stack_size];
+	uint32_t popped_value = stack->stack[stack->stack_size - 1];
 	stack->stack_size--;
 	stack->stack = realloc(stack->stack, stack->stack_size * sizeof(uint32_t));
 	return popped_value;

@@ -12,8 +12,8 @@ uint32_t parse_int(uint8_t* x) {
 }
 
 #ifdef DEBUG
-void print_reg(vm_runtime* vm) {
-	printf("{ %" PRIu32 " %" PRIu32 " %" PRIu32 " %" PRIu32 " }\n", vm->registers[0], vm->registers[1], vm->registers[2], vm->registers[3]);
+void print_reg(uint32_t* registers) {
+	printf("{ %" PRIu32 " %" PRIu32 " %" PRIu32 " %" PRIu32 " }\n", registers[0], registers[1], registers[2], registers[3]);
 }
 
 void print_stack(vm_stack *stack) {

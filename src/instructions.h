@@ -23,6 +23,8 @@ void sail_instruction_MOV_REGTOREG(vm_runtime* vm);
 // STACK
 void sail_instruction_PUSH_VALUE();
 void sail_instruction_PUSH_REG();
+void sail_instruction_POP_REG();
+void sail_instruction_DUPE();
 
 // MATH
 void sail_instruction_ADD_VALTOREG(vm_runtime* vm);
