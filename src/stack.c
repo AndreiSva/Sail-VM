@@ -9,7 +9,6 @@ vm_stack vm_init_stack() {
 	vm_stack stack;
 	stack.stack_size = 0;
 	stack.stack = (uint32_t*) malloc(sizeof(uint32_t*));
-	printf("%li\n", stack.stack_size);
 	return stack;
 }
 
@@ -19,9 +18,7 @@ uint32_t* vm_stack_peek(vm_stack *stack) {
 
 void vm_stack_push(vm_stack *stack, uint32_t value) {
 	stack->stack_size++;
-
 	stack->stack = (uint32_t*) realloc(stack->stack, stack->stack_size * sizeof(uint32_t*));
-
 	stack->stack[stack->stack_size - 1] = value;
 }
 

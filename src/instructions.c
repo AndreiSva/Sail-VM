@@ -139,7 +139,6 @@ void sail_instruction_DUPE(vm_runtime* vm) {
 #ifdef DEBUG
 	print_stack(&vm->stack);
 #endif
-	printf("%i\n", *vm_stack_peek(&vm->stack));
 	vm_stack_push(&vm->stack, *vm_stack_peek(&vm->stack));
 }
 
