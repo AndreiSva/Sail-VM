@@ -1,4 +1,4 @@
-#include "global.h"
+#include "../include/global.h"
 
 #include <stdint.h>
 #include <stdlib.h>

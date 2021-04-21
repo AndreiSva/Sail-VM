@@ -2,11 +2,11 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "stack.h"
-#include "vm.h"
-#include "instructions.h"
-#include "global.h"
-#include "flags.h"
+#include "../include/stack.h"
+#include "../include/vm.h"
+#include "../include/instructions.h"
+#include "../include/global.h"
+#include "../include/flags.h"
 
 void compare(vm_runtime* vm, uint32_t a, uint32_t b) {
 	vm_set_flag(&vm->flags, flag_equal, a == b);
@@ -152,12 +152,6 @@ void sail_instruction_ADD_VALTOREG(vm_runtime* vm) {
 	print_reg(vm->registers);
 #endif
 	vm->pc++;
-
-//	vm->pc++;
-//	vm->registers[vm->bytecode[vm->pc]] += parse_int(vm_read32(vm));
-//#ifdef DEBUG
-//	print_reg(vm);
-//#endif
 }
 
 void sail_instruction_ADD_STACK(vm_runtime* vm) {

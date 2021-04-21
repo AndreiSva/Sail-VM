@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "stack.h"
-#include "global.h"
+#include "../include/stack.h"
+#include "../include/global.h"
 
 vm_stack vm_init_stack() {
 	vm_stack stack;

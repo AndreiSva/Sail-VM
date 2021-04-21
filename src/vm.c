@@ -4,11 +4,11 @@
 #include <unistd.h>
 #include <inttypes.h>
 
-#include "global.h"
-#include "ram.h"
-#include "vm.h"
+#include "../include/global.h"
+#include "../include/ram.h"
+#include "../include/vm.h"
 
-#include "instructions.h"
+#include "../include/instructions.h"
 
 void sail_placeholder(vm_runtime* vm) {
 	return;
@@ -137,7 +137,7 @@ GREEN "platform: " RESET YELLOW PLATFORM " (%s)\n" RESET
 #ifdef INTERACTIVE
 		printf(RED "Error: file %s not found\n" RESET, argv[argc - 1]);
 #endif
-		return 1;
+		exit(1);
 	}
 
 	FILE* source = fopen(argv[argc - 1], "rb");
@@ -146,9 +146,14 @@ GREEN "platform: " RESET YELLOW PLATFORM " (%s)\n" RESET
 	rewind(source);
 	
 	uint8_t* bytecode = malloc(program_size);
+	
+	if (!fread(bytecode, 1, program_size, source)) {
+#ifdef INTERACTIVE
+		printf(RED "Error: unable to read file\n" RESET);
+#endif
+		exit(1);
+	}
 
-	// causes a warning on some libc
-	fread(bytecode, 1, program_size, source);
 	
 #ifdef DEBUG
 	printf("%s", "running with bytes: ");

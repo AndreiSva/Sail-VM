@@ -1,4 +1,4 @@
-#include "flags.h"
+#include "../include/flags.h"
 #include <stdint.h>
 
 uint8_t vm_get_flag(vm_flags *flags, sail_flag_types index) {

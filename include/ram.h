@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 typedef struct memory {
-	uint64_t* mem;
+	uint32_t* mem;
 	size_t capacity;
 } vm_memory;
 

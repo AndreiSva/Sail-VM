@@ -1,7 +1,9 @@
-#include "ram.h"
+#include "../include/ram.h"
 
 vm_memory vm_init_memory() {
 	vm_memory new_mem; 
+	new_mem.capacity = 0;
+	new_mem.mem = (uint32_t*) malloc(sizeof(uint32_t*));
 	return new_mem;
 }
 
