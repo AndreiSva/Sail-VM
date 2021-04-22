@@ -15,54 +15,57 @@ void sail_placeholder(vm_runtime* vm) {
 }
 
 void (*vm_instructionset[])(vm_runtime*) = {
-	sail_instruction_EXT, 			/* 0x00 */
-	sail_instruction_SYSCALL,		/* 0x01 */
+	sail_instruction_EXT, 
+	sail_instruction_SYSCALL,		
 	
 	// MOV
-	sail_instruction_MOV_VALUETOREG, 	/* 0x02 */
-	sail_instruction_MOV_REGTOREG, 		/* 0x03 */
+	sail_instruction_MOV_VALUETOREG, 
+	sail_instruction_MOV_REGTOREG, 	
 
-	//MATH
-	sail_instruction_ADD_VALTOREG,		/* 0x04 */
-	sail_instruction_ADD_REGTOREG,		/* 0x05 */
-	sail_instruction_MUL_REG,		/* 0x06 */
-	sail_instruction_DIV_REG,		/* 0x07 */
+	// MATH
+	sail_instruction_ADD_VALTOREG,
+	sail_instruction_ADD_REGTOREG,		
+	sail_instruction_MUL_REG,
+	sail_instruction_DIV_REG,		
+	sail_instruction_INC_REG,
+	sail_instruction_DEINC_REG,
 
-	sail_instruction_GTO_IFEQUAL,		/* 0x08  */
-	sail_instruction_GTO,			/* 0x09 */
-	sail_instruction_GTO_IFNEQUAL,		/* 0xA  */
-	sail_instruction_GTO_IFLESS, 		/* 0xB  */
-	sail_instruction_GTO_IFMORE,		/* 0xC  */
+	// GOTO
+	sail_instruction_GTO_IFEQUAL,	
+	sail_instruction_GTO,		
+	sail_instruction_GTO_IFNEQUAL,		
+	sail_instruction_GTO_IFLESS, 		
+	sail_instruction_GTO_IFMORE,		
 
-	sail_instruction_COMP_REGTOREG,		/* 0xD  */
-	sail_placeholder,			/* 0xE  */
-	sail_placeholder,			/* 0xF  */
-	sail_placeholder,			/* 0x10 */
-	sail_placeholder,			/* 0x11 */
-	sail_placeholder,			/* 0x12  */
-	sail_placeholder,			/* 0x13  */
-	sail_instruction_PUSH_REG,			/* 0x14  */
-	sail_instruction_PUSH_VALUE,			/* 0x15 */
-	sail_instruction_POP_REG,			/* 0x16 */
-	sail_instruction_DUPE,				/* 0x17 */
-	sail_placeholder,			/* 0x18  */
-	sail_placeholder,			/* 0x19  */
-	sail_placeholder,			/* 0x1A  */
-	sail_placeholder,			/* 0x1B  */
-	sail_placeholder,			/* 0x1C  */
-	sail_placeholder,			/* 0x1D  */
-	sail_placeholder,			/* 0x1E  */
-	sail_placeholder,			/* 0x1F  */
-	sail_placeholder,			/* 0x20  */
-	sail_placeholder,			/* 0x21  */
-	sail_placeholder,			/* 0x22  */
-	sail_placeholder,			/* 0x23  */
-	sail_placeholder,			/* 0x24  */
-	sail_placeholder,			/* 0x25  */
-	sail_placeholder,			/* 0x26  */
-	sail_placeholder,			/* 0x27  */
-	sail_placeholder,			/* 0x28  */
-	sail_placeholder,			/* 0x29  */
+	sail_instruction_COMP_REGTOREG,		
+	sail_placeholder,		
+	sail_placeholder,			
+	sail_placeholder,			
+	sail_placeholder,			
+	sail_placeholder,			
+	sail_placeholder,		
+	sail_instruction_PUSH_REG,		
+	sail_instruction_PUSH_VALUE,			
+	sail_instruction_POP_REG,			
+	sail_instruction_DUPE,			
+	sail_placeholder,		
+	sail_placeholder,		
+	sail_placeholder,		
+	sail_placeholder,	
+	sail_placeholder,		
+	sail_placeholder,	
+	sail_placeholder,		
+	sail_placeholder,	
+	sail_placeholder,		
+	sail_placeholder,		
+	sail_placeholder,		
+	sail_placeholder,		
+	sail_placeholder,		
+	sail_placeholder,		
+	sail_placeholder,		
+	sail_placeholder,		
+	sail_placeholder,		
+	sail_placeholder,			
 };
 
 vm_runtime init_vm(uint8_t* bytecode) {

@@ -17,9 +17,9 @@ void print_reg(uint32_t* registers) {
 }
 
 void print_stack(vm_stack *stack) {
-	printf("stack (%li): { ", stack->stack_size);
+	printf("stack (%lu): { ", stack->stack_size);
 	for (int i = 0; i < stack->stack_size; i++) {
-		printf("%i ", stack->stack[i]);
+		printf("%u ", stack->stack[i]);
 	}
 	printf("}\n");
 }

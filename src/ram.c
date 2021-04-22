@@ -37,7 +37,7 @@ void vm_ram_debug(vm_memory* target) {
 		if (i % 10 == 0) {
 			printf("\n");
 		}	
-		printf("%" PRIx64 " ", target->mem[i]);
+		printf("%" PRIx32 " ", target->mem[i]);
 	}
 }
 #endif

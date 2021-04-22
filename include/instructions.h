@@ -43,11 +43,4 @@ void sail_instruction_AND_REG(vm_runtime* vm);
 void sail_instruction_OR_REG(vm_runtime* vm);
 void sail_instruction_NOT_REG(vm_runtime* vm);
 
-// syscalls
-typedef enum {
-	call_out,
-	call_in,
-	call_clear,
-} vm_syscalls;
-
 #endif

@@ -8,6 +8,7 @@ typedef enum {
 	flag_nequal,
 	flag_greaterthan,
 	flag_lesserthan,
+	flag_overflow,
 	flags_max
 } sail_flag_types;
 

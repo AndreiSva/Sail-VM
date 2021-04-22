@@ -7,6 +7,7 @@
 #include "../include/instructions.h"
 #include "../include/global.h"
 #include "../include/flags.h"
+#include "../include/syscalls.h"
 
 void compare(vm_runtime* vm, uint32_t a, uint32_t b) {
 	vm_set_flag(&vm->flags, flag_equal, a == b);
@@ -21,29 +22,22 @@ void goto_addr(vm_runtime* vm, uint32_t addr, char condition) {
 #ifdef DEBUG
 		printf("jumping to %i (%02x)\n", vm->pc + 1, vm->bytecode[vm->pc + 1]);
 #endif
+	} else {
+		vm->pc += 4;	
 	}
 }
 
 void sail_instruction_EXT(vm_runtime* vm) {
 #ifdef DEBUG
+	printf("%i\n", vm->pc);
 	printf("PROGRAM EXIT WITH EXIT CODE %i\n", vm->bytecode[vm->pc + 1]);
 #endif
 	exit(vm->bytecode[vm->pc + 1]);	
 }
 
 void sail_instruction_SYSCALL(vm_runtime* vm) {
-	switch (vm->registers[0]) {
-		case call_clear:
-#ifdef __WIN32
-#include <conio.h>
-#else
-#define clrscr() printf("\e[1;1H\e[2J")
-#endif
-			clrscr();
-			break;
-	}
+	vm_syscall(vm, vm->registers[0]);
 }
-
 
 /* COMP */
 
@@ -52,7 +46,7 @@ void sail_instruction_COMP_REGTOREG(vm_runtime* vm) {
 	uint32_t reg2 = vm->registers[vm->bytecode[++vm->pc]];
 
 #ifdef DEBUG
-	printf("comparing %i and %i\n", reg1, reg2);
+	printf("comparing %u and %u\n", reg1, reg2);
 #endif
 
 	compare(vm, reg1, reg2);
@@ -116,7 +110,6 @@ void sail_instruction_PUSH_REG(vm_runtime* vm) {
 	vm->pc++;
 }
 
-
 void sail_instruction_PUSH_VALUE(vm_runtime* vm) {
 	uint32_t value = parse_int(vm_read32(vm));
 	vm_stack_push(&vm->stack, value);
@@ -145,8 +138,13 @@ void sail_instruction_DUPE(vm_runtime* vm) {
 /* MATH */
 
 void sail_instruction_ADD_VALTOREG(vm_runtime* vm) {
-	vm->registers[vm->bytecode[vm->pc + 1]] += parse_int(vm_read32(vm));
+	uint32_t value = parse_int(vm_read32(vm));
 	
+	if (vm->registers[vm->bytecode[vm->pc + 1]] > UINT32_MAX - value) {
+		vm_set_flag(&vm->flags, flag_overflow, 1);
+	}
+
+	vm->registers[vm->bytecode[vm->pc + 1]] += value;
 #ifdef DEBUG
 	print_reg(vm->registers);
 #endif
@@ -154,12 +152,26 @@ void sail_instruction_ADD_VALTOREG(vm_runtime* vm) {
 }
 
 void sail_instruction_ADD_STACK(vm_runtime* vm) {
-	vm_stack_push(&vm->stack, vm_stack_pop(&vm->stack) + vm_stack_pop(&vm->stack));
+	uint32_t stack1 = vm_stack_pop(&vm->stack);
+	uint32_t stack2 = vm_stack_pop(&vm->stack);
+	
+	if (stack1 > UINT32_MAX - stack2) {
+		vm_set_flag(&vm->flags, flag_overflow, 1);
+	}
+
+	vm_stack_push(&vm->stack, stack1 + stack2);
 }
 
 void sail_instruction_ADD_REGTOREG(vm_runtime* vm) {
 	vm->pc++;
-	vm->registers[vm->bytecode[vm->pc]] += vm->registers[vm->bytecode[vm->pc + 1]];
+	
+	uint32_t reg1 = vm->registers[vm->bytecode[vm->pc]];
+	uint32_t reg2 = vm->registers[vm->bytecode[vm->pc + 1]];
+	
+	if (reg1 > UINT32_MAX  - reg2) {
+		vm_set_flag(&vm->flags, flag_overflow, 1);
+	}
+
 	vm->pc++;
 #ifdef DEBUG
 	print_reg(vm->registers);
@@ -188,6 +200,11 @@ void sail_instruction_SUB_REGTOREG(vm_runtime* vm) {
 
 void sail_instruction_INC_REG(vm_runtime* vm) {
 	vm->registers[vm->bytecode[++vm->pc]]++;
+	
+	if (vm->registers[vm->bytecode[vm->pc]] == UINT32_MAX) {
+		vm_set_flag(&vm->flags, flag_overflow, 1);
+	}
+
 #ifdef DEBUG
 	printf("incrementing reg %i\n", vm->bytecode[vm->pc]);
 	print_reg(vm->registers);
@@ -196,6 +213,11 @@ void sail_instruction_INC_REG(vm_runtime* vm) {
 
 void sail_instruction_DEINC_REG(vm_runtime* vm) {
 	vm->registers[vm->bytecode[++vm->pc]]--;
+	
+	if (vm->registers[vm->bytecode[vm->pc]] == 0) {
+		vm_set_flag(&vm->flags, flag_overflow, 1);
+	}
+
 #ifdef DEBUG
 	printf("deincrementing reg %i\n", vm->bytecode[vm->pc]);
 	print_reg(vm->registers);
