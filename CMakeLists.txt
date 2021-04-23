@@ -6,9 +6,16 @@ file(GLOB build_files
      "src/*.c"
 )
 
-set(CMAKE_C_FLAGS_DEBUG "-g -D DEBUG=1 -D INTERACTIVE=1 -fsanitize=address")
-set(CMAKE_C_FLAGS_RELEASE "-02 -D INTERACTIVE=1")
-
 option(interactive "disable interactive use" 1)
 
+set(version "dev")
+set(CMAKE_C_FLAGS_DEBUG "-g -D INTERACTIVE=${interactive} -fsanitize=address")
+set(CMAKE_C_FLAGS_RELEASE "-O2 -D INTERACTIVE=${interactive} -D VERSION=\\\"${version}\\\"")
+
 add_executable(sailvm ${build_files})
+
+install(
+	TARGETS sailvm
+    PUBLIC_HEADER
+    DESTINATION /usr/bin
+)
