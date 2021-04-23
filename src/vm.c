@@ -7,7 +7,6 @@
 #include "../include/global.h"
 #include "../include/ram.h"
 #include "../include/vm.h"
-
 #include "../include/instructions.h"
 
 void sail_placeholder(vm_runtime* vm) {
@@ -15,8 +14,10 @@ void sail_placeholder(vm_runtime* vm) {
 }
 
 void (*vm_instructionset[])(vm_runtime*) = {
+	// ETC
 	sail_instruction_EXT, 
 	sail_instruction_SYSCALL,		
+	sail_instruction_FLAG_RESET,
 	
 	// MOV
 	sail_instruction_MOV_VALUETOREG, 
@@ -90,9 +91,7 @@ uint8_t* vm_read32(vm_runtime* vm) {
 
 void vm_run(vm_runtime* vm) {
 	while (true) {
-#ifdef DEBUG
-		printf("running %02x, (pc = %i)\n", vm->instruction, vm->pc);
-#endif		
+		log("running %02x, (pc = %i)\n", vm->instruction, vm->pc);
 		vm_instructionset[vm->instruction](vm);
 		
 		vm->instruction = vm->bytecode[++vm->pc];
@@ -159,11 +158,11 @@ GREEN "platform: " RESET YELLOW PLATFORM " (%s)\n" RESET
 
 	
 #ifdef DEBUG
-	printf("%s", "running with bytes: ");
+	log("%s", "running with bytes: ");
 	for (int i = 0; i < program_size; i++) {
 		printf("%02x ", bytecode[i]);
 	}
-	printf("\n");
+	log("\n");
 #endif
 
 	vm_runtime sail_vm = init_vm(bytecode);

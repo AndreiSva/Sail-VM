@@ -5,6 +5,7 @@
 
 void sail_instruction_EXT(vm_runtime* vm);
 void sail_instruction_SYSCALL(vm_runtime* vm);
+void sail_instruction_FLAG_RESET(vm_runtime* vm);
 
 // COMP
 void sail_instruction_COMP_REGTOREG(vm_runtime* vm);

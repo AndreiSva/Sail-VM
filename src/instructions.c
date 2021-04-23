@@ -19,24 +19,27 @@ void compare(vm_runtime* vm, uint32_t a, uint32_t b) {
 void goto_addr(vm_runtime* vm, uint32_t addr, char condition) {
 	if (condition) {
 		vm->pc = addr - 1;
-#ifdef DEBUG
-		printf("jumping to %i (%02x)\n", vm->pc + 1, vm->bytecode[vm->pc + 1]);
-#endif
+		log("jumping to %i (%02x)\n", vm->pc + 1, vm->bytecode[vm->pc + 1]);
 	} else {
 		vm->pc += 4;	
 	}
 }
 
 void sail_instruction_EXT(vm_runtime* vm) {
-#ifdef DEBUG
-	printf("%i\n", vm->pc);
-	printf("PROGRAM EXIT WITH EXIT CODE %i\n", vm->bytecode[vm->pc + 1]);
-#endif
+	log("PROGRAM EXIT WITH EXIT CODE %i\n", vm->bytecode[vm->pc + 1]);
 	exit(vm->bytecode[vm->pc + 1]);	
 }
 
 void sail_instruction_SYSCALL(vm_runtime* vm) {
 	vm_syscall(vm, vm->registers[0]);
+}
+
+void sail_instruction_FLAG_RESET(vm_runtime* vm) {
+	vm_set_flag(&vm->flags, flag_equal, 0);
+	vm_set_flag(&vm->flags, flag_greaterthan, 0);
+	vm_set_flag(&vm->flags, flag_lesserthan, 0);
+	vm_set_flag(&vm->flags, flag_nequal, 0);
+	vm_set_flag(&vm->flags, flag_overflow, 0);
 }
 
 /* COMP */
@@ -45,9 +48,7 @@ void sail_instruction_COMP_REGTOREG(vm_runtime* vm) {
 	uint32_t reg1 = vm->registers[vm->bytecode[++vm->pc]];
 	uint32_t reg2 = vm->registers[vm->bytecode[++vm->pc]];
 
-#ifdef DEBUG
-	printf("comparing %u and %u\n", reg1, reg2);
-#endif
+	log("comparing %u and %u\n", reg1, reg2);
 
 	compare(vm, reg1, reg2);
 }
@@ -84,12 +85,9 @@ void sail_instruction_GTO_IFNEQUAL(vm_runtime* vm) {
 
 void sail_instruction_MOV_REGTOREG(vm_runtime* vm) {
 	vm->registers[vm->bytecode[vm->pc + 2]] = vm->registers[vm->bytecode[vm->pc + 1]];
-#ifdef DEBUG
-	printf("moved reg %i into reg %i\n", vm->bytecode[vm->pc + 1], vm->bytecode[vm->pc + 2]);
+	log("moved reg %i into reg %i\n", vm->bytecode[vm->pc + 1], vm->bytecode[vm->pc + 2]);
 	print_reg(vm->registers);
-#endif
 	vm->pc += 2;
-	
 }
 
 void sail_instruction_MOV_VALUETOREG(vm_runtime* vm) {
@@ -97,9 +95,7 @@ void sail_instruction_MOV_VALUETOREG(vm_runtime* vm) {
 	uint8_t reg_index = vm->bytecode[vm->pc];
 	vm->registers[reg_index] = parse_int(vm_read32(vm));;
 	
-#ifdef DEBUG
 	print_reg(vm->registers);
-#endif
 }
 
 
@@ -113,25 +109,19 @@ void sail_instruction_PUSH_REG(vm_runtime* vm) {
 void sail_instruction_PUSH_VALUE(vm_runtime* vm) {
 	uint32_t value = parse_int(vm_read32(vm));
 	vm_stack_push(&vm->stack, value);
-#ifdef DEBUG
 	print_stack(&vm->stack);
-	printf("pushing value %d to stack\n", value);
-#endif
+	log("pushing value %d to stack\n", value);
 }
 
 void sail_instruction_POP_REG(vm_runtime* vm) {
 	vm->registers[vm->bytecode[vm->pc + 1]] = vm_stack_pop(&vm->stack);
-#ifdef DEBUG
 	print_stack(&vm->stack);
 	print_reg(vm->registers);
-#endif
 	vm->pc++;
 }
 
 void sail_instruction_DUPE(vm_runtime* vm) {
-#ifdef DEBUG
 	print_stack(&vm->stack);
-#endif
 	vm_stack_push(&vm->stack, *vm_stack_peek(&vm->stack));
 }
 
@@ -145,9 +135,7 @@ void sail_instruction_ADD_VALTOREG(vm_runtime* vm) {
 	}
 
 	vm->registers[vm->bytecode[vm->pc + 1]] += value;
-#ifdef DEBUG
 	print_reg(vm->registers);
-#endif
 	vm->pc++;
 }
 
@@ -173,16 +161,13 @@ void sail_instruction_ADD_REGTOREG(vm_runtime* vm) {
 	}
 
 	vm->pc++;
-#ifdef DEBUG
 	print_reg(vm->registers);
-#endif
 }
 
+// TODO: add overflow checkers
 void sail_instruction_SUB_VALTOREG(vm_runtime* vm) {
 	vm->registers[vm->bytecode[++vm->pc]] -= parse_int(vm_read32(vm));
-#ifdef DEBUG
 	print_reg(vm->registers);
-#endif
 }
 
 void sail_instruction_SUB_STACK(vm_runtime* vm) {
@@ -193,9 +178,7 @@ void sail_instruction_SUB_REGTOREG(vm_runtime* vm) {
 	vm->pc++;
 	vm->registers[vm->bytecode[vm->pc]] -= vm->registers[vm->bytecode[vm->pc + 1]];
 
-#ifdef DEBUG
 	print_reg(vm->registers);
-#endif
 }
 
 void sail_instruction_INC_REG(vm_runtime* vm) {
@@ -205,10 +188,8 @@ void sail_instruction_INC_REG(vm_runtime* vm) {
 		vm_set_flag(&vm->flags, flag_overflow, 1);
 	}
 
-#ifdef DEBUG
-	printf("incrementing reg %i\n", vm->bytecode[vm->pc]);
+	log("incrementing reg %i\n", vm->bytecode[vm->pc]);
 	print_reg(vm->registers);
-#endif
 }
 
 void sail_instruction_DEINC_REG(vm_runtime* vm) {
@@ -218,18 +199,14 @@ void sail_instruction_DEINC_REG(vm_runtime* vm) {
 		vm_set_flag(&vm->flags, flag_overflow, 1);
 	}
 
-#ifdef DEBUG
-	printf("deincrementing reg %i\n", vm->bytecode[vm->pc]);
+	log("deincrementing reg %i\n", vm->bytecode[vm->pc]);
 	print_reg(vm->registers);
-#endif
 }
 
 void sail_instruction_MUL_REG(vm_runtime* vm) {
 	vm->registers[vm->bytecode[++vm->pc]] *= parse_int(vm_read32(vm));
-#ifdef DEBUG
-	printf("multiplying reg %i by \n", vm->bytecode[vm->pc]);
+	log("multiplying reg %i by \n", vm->bytecode[vm->pc]);
 	print_reg(vm->registers);
-#endif
 }
 
 void sail_instruction_DIV_REG(vm_runtime* vm) {

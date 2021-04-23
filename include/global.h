@@ -48,6 +48,17 @@
 #define DEBUG 1
 #endif
 
+// debug macros
+#ifdef DEBUG
+#define log(...) printf(__VA_ARGS__)
+#define print_reg(registers) print_reg(registers)
+#define print_stack(stack) print_stack(stack)
+#else
+#define log(...)
+#define print_reg(registers)
+#define print_stack(stack)
+#endif
+
 // parse 32 bit integer out of four 8 bit integers
 uint32_t parse_int(uint8_t* x);
 
