@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 
+// converts an array of uint8_t to a single uint32_t
 uint32_t parse_int(uint8_t* x) {
 	uint8_t y[4] = {x[0], x[1], x[2], x[3]};
 	free(x);

@@ -91,16 +91,20 @@ uint8_t* vm_read32(vm_runtime* vm) {
 
 void vm_run(vm_runtime* vm) {
 	// read the header
-	size_t i = 0;
+	int i = 0;
+	vm->hsize = 4;
 	uint8_t byte = vm->bytecode[vm->pc];
 	while (true) {
-		if (byte == 0x7F && vm->bytecode[vm->pc+1] == 0xFF && vm->bytecode[vm->pc+2] == 0xFF && vm->bytecode[vm->pc+3] == 0xFF) {
+		if (byte == 0x7F && vm->bytecode[i+1] == 0xFF && vm->bytecode[i+2] == 0xFF && vm->bytecode[i+3] == 0xFF) {
 			break;
 		}
-		vm_ram_write(&vm->ram, i++, byte);
-		byte = vm->bytecode[++vm->pc];
+		vm->hsize++;
+		vm_ram_write(&vm->ram, i, byte);
+		byte = vm->bytecode[++i];
 	}
-	vm->pc += 4;
+
+	// offset bytecode to compensate for pc offset caused by the header
+	vm->bytecode += vm->hsize;
 	vm->instruction = vm->bytecode[vm->pc];
 
 	// start interpreting the bytecode
