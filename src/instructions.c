@@ -25,11 +25,6 @@ void goto_addr(vm_runtime* vm, uint32_t addr, char condition) {
 	}
 }
 
-void sail_instruction_EXT(vm_runtime* vm) {
-	log("PROGRAM EXIT WITH EXIT CODE %i\n", vm->bytecode[vm->pc + 1]);
-	exit(vm->bytecode[vm->pc + 1]);	
-}
-
 void sail_instruction_SYSCALL(vm_runtime* vm) {
 	vm_syscall(vm, vm->registers[0]);
 }
@@ -164,20 +159,37 @@ void sail_instruction_ADD_REGTOREG(vm_runtime* vm) {
 	print_reg(vm->registers);
 }
 
-// TODO: add overflow checkers
 void sail_instruction_SUB_VALTOREG(vm_runtime* vm) {
-	vm->registers[vm->bytecode[++vm->pc]] -= parse_int(vm_read32(vm));
+	vm->pc++;
+	uint32_t reg = parse_int(vm_read32(vm));
+
+	if (reg > vm->registers[vm->bytecode[vm->pc]]) {
+		vm_set_flag(&vm->flags, flag_overflow, 1);
+	}
+
+	vm->registers[vm->bytecode[vm->pc]] -= reg;
 	print_reg(vm->registers);
 }
 
 void sail_instruction_SUB_STACK(vm_runtime* vm) {
-	vm_stack_push(&vm->stack, vm_stack_pop(&vm->stack) - vm_stack_pop(&vm->stack));
+	uint32_t stack1 = vm_stack_pop(&vm->stack); 
+	uint32_t stack2 = vm_stack_pop(&vm->stack); 
+	
+	if (stack2 > stack1) {
+		vm_set_flag(&vm->flags, flag_overflow, 1);
+	}
+
+	vm_stack_push(&vm->stack, stack1 - stack2);
 }
 
 void sail_instruction_SUB_REGTOREG(vm_runtime* vm) {
 	vm->pc++;
-	vm->registers[vm->bytecode[vm->pc]] -= vm->registers[vm->bytecode[vm->pc + 1]];
 
+	if (vm->registers[vm->bytecode[vm->pc + 1]] > vm->registers[vm->bytecode[vm->pc]]) {
+		vm_set_flag(&vm->flags, flag_overflow, 1);
+	}
+
+	vm->registers[vm->bytecode[vm->pc]] -= vm->registers[vm->bytecode[vm->pc + 1]];
 	print_reg(vm->registers);
 }
 
@@ -204,7 +216,13 @@ void sail_instruction_DEINC_REG(vm_runtime* vm) {
 }
 
 void sail_instruction_MUL_REG(vm_runtime* vm) {
-	vm->registers[vm->bytecode[++vm->pc]] *= parse_int(vm_read32(vm));
+	uint32_t value = parse_int(vm_read32(vm));
+	
+	if (vm->registers[vm->bytecode[++vm->pc]] > UINT32_MAX / value) {
+		vm_set_flag(&vm->flags, flag_overflow, 1);
+	}
+
+	vm->registers[vm->bytecode[vm->pc]] *= value;
 	log("multiplying reg %i by \n", vm->bytecode[vm->pc]);
 	print_reg(vm->registers);
 }

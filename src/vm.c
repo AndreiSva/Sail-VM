@@ -15,7 +15,6 @@ void sail_placeholder(vm_runtime* vm) {
 
 void (*vm_instructionset[])(vm_runtime*) = {
 	// ETC
-	sail_instruction_EXT, 
 	sail_instruction_SYSCALL,		
 	sail_instruction_FLAG_RESET,
 	
@@ -73,9 +72,9 @@ vm_runtime init_vm(uint8_t* bytecode) {
 	vm_runtime res; 
 	res.pc = 0;
 	res.bytecode = bytecode;
-	res.sail_ram = vm_init_memory();
+	res.ram = vm_init_memory();
 	res.stack = vm_init_stack();
-	res.registers = (uint32_t*) calloc(4, sizeof(uint32_t*)); 
+	res.registers = calloc(4, sizeof(uint32_t*)); 
 	res.instruction = res.bytecode[res.pc];
 	return res;
 }
@@ -90,6 +89,20 @@ uint8_t* vm_read32(vm_runtime* vm) {
 }
 
 void vm_run(vm_runtime* vm) {
+	// read the header
+	size_t i = 0;
+	uint8_t byte = vm->bytecode[vm->pc];
+	while (true) {
+		if (byte == 0x7F && vm->bytecode[vm->pc+1] == 0xFF && vm->bytecode[vm->pc+2] == 0xFF && vm->bytecode[vm->pc+3] == 0xFF) {
+			break;
+		}
+		vm_ram_write(&vm->ram, i++, byte);
+		byte = vm->bytecode[++vm->pc];
+	}
+	vm->pc += 4;
+	vm->instruction = vm->bytecode[vm->pc];
+
+	// start interpreting the bytecode
 	while (true) {
 		log("running %02x, (pc = %i)\n", vm->instruction, vm->pc);
 		vm_instructionset[vm->instruction](vm);

@@ -13,11 +13,13 @@ typedef struct {
 	uint8_t* bytecode;
 	uint8_t instruction;
 
-	vm_memory sail_ram;
+	vm_memory ram;
 	vm_flags flags;
 	vm_stack stack;
 
-	unsigned int pc;
+	uint32_t pc;
+	uint32_t hsize;
+
 	uint32_t* registers;
 } vm_runtime;
 
