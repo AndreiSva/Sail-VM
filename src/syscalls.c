@@ -24,9 +24,19 @@ void call_out(vm_runtime* vm) {
 	}
 }
 
+void call_in(vm_runtime* vm) {
+	char buffer[vm->registers[2]];
+	fgets(buffer, vm->registers[2], stdin);
+	
+	for (int i = 0; i < vm->registers[2]; i++) {
+		vm_ram_write(&vm->ram, i + vm->registers[1], buffer[i]);
+	}
+}
+
 void (*vm_syscalls[])(vm_runtime*) = {
 	call_exit,
 	call_out,
+	call_in,
 	call_clear,
 };
 
