@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <inttypes.h>
+#include <stdbool.h>
 
 #include "../include/global.h"
 #include "../include/ram.h"

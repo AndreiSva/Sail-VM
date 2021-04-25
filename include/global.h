@@ -2,10 +2,6 @@
 #define __global
 
 #include <stdint.h>
-#define bool char
-#define true 1
-#define false 0
-
 #ifdef INTERACTIVE
 #ifndef __WIN32
 #define RED    "\x1B[31m"
