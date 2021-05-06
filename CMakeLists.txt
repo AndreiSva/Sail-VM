@@ -9,6 +9,7 @@ file(GLOB build_files
 option(interactive "disable interactive use" 1)
 
 set(version "dev")
+set(CMAKE_C_FLAGS "-D INTERACTIVE=${interactive}")
 set(CMAKE_C_FLAGS_DEBUG "-g -D INTERACTIVE=${interactive} -fsanitize=address")
 set(CMAKE_C_FLAGS_RELEASE "-O2 -D INTERACTIVE=${interactive} -D VERSION=\\\"${version}\\\"")
 
