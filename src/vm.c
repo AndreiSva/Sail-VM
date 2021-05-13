@@ -166,5 +166,6 @@ GREEN "platform: " RESET YELLOW PLATFORM " (%s)\n" RESET
 #endif
 
 	vm_runtime sail_vm = init_vm(bytecode);
+	fclose(source);
 	vm_run(&sail_vm);
 }
